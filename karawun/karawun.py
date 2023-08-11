@@ -255,6 +255,8 @@ def load_trackfile(fileName, origVectorMode=False):
             trackStruct['datatype'] = None
             trackStruct['count'] = None
             trackStruct['total_count'] = None
+            trackStruct['command_history'] = None
+            trackStruct['timestamp'] = None
             trackStruct['tracks'] = list()
             pat = re.compile('^([a-z_]+): (.*)$')
 
@@ -315,6 +317,10 @@ def load_trackfile(fileName, origVectorMode=False):
                                 trackStruct['dataoffset'] = \
                                     int(filemat.group(1))
                             del filemat
+                        elif curKeyword in ['command_history']:
+                            trackStruct[curKeyword] = curValue[:]
+                        elif curKeyword in ['timestamp']:
+                            trackStruct[curKeyword] = curValue[:]
         # if firstLine != 'mrtrix tracks':
         if trackStruct['datatype'] is not None:
             FID.seek(0, 2)  # 2 means the end of the file
@@ -1491,7 +1497,7 @@ def tck_to_dicom(tckfile, dicomfile, outputfile, seriesNum=0,
 
     # make some description strings for content description
     ContDesc = 'mrtrix'
-    if tck['mrtrix_version'] is not None:
+    if tck['mrtrix_version'] is not None and tck['method'] is not None and tck['lmax'] is not None:
         ContDesc = tck['mrtrix_version'] + ',' + tck[
             'method'] + ",lmax=" + str(tck['lmax'])
     # create basics of dicom
